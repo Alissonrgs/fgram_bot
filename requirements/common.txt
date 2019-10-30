@@ -1,1 +1,4 @@
 python-telegram-bot==12.2.0
+beautifulsoup4==4.8.1
+requests==2.22.0
+python-dotenv==0.10.3
