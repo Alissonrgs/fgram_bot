@@ -8,7 +8,11 @@ import os
 
 # Thirt Party Imports
 from dotenv import load_dotenv
-from telegram import (ReplyKeyboardRemove)
+from telegram import (
+    ReplyKeyboardRemove,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
@@ -88,6 +92,21 @@ def list_all(update, content):
     
     update.message.reply_text(final)
 
+def build_menu(buttons,n_cols,header_buttons=None,footer_buttons=None):
+    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, header_buttons)
+    if footer_buttons:
+        menu.append(footer_buttons)
+    return menu
+
+def do_order(update, content):
+    button_list=[
+        InlineKeyboardButton('Carne',callback_data=1),
+        InlineKeyboardButton('Frango',callback_data=2)
+    ]
+    reply_markup=InlineKeyboardMarkup(build_menu(button_list,n_cols=1))
+    update.message.reply_text("Please choose from the following : ",reply_markup=reply_markup)
 
 def main():
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
@@ -98,7 +117,8 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[
             CommandHandler('start', start),
-            CommandHandler('list', list_all)
+            CommandHandler('list', list_all),
+            CommandHandler('add', do_order)
         ],
 
         states={
