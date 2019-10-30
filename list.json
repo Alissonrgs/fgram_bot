@@ -1,6 +1,6 @@
 [
     {
-        "user": "Gabriel",
+        "user": "Gabriel Victor",
         "pedido": [
             "Filé de frango grelhado",
             "Baião",
@@ -12,7 +12,7 @@
         "price": 20
     },
     {
-        "user": "Gabriel",
+        "user": "Alisson Soares",
         "pedido": [
             "Filé de frango grelhado",
             "Baião",
@@ -24,7 +24,7 @@
         "price": 20
     },
     {
-        "user": "Gabriel",
+        "user": "Rodrigo Parente",
         "pedido": [
             "Filé de frango grelhado",
             "Baião",

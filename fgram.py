@@ -8,7 +8,10 @@ import os
 
 # Thirt Party Imports
 from dotenv import load_dotenv
-from telegram import (ReplyKeyboardRemove)
+from telegram import (
+    ReplyKeyboardRemove,
+    ParseMode
+)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
@@ -73,6 +76,7 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
+
 def list_all(update, content):
     user = update.message.from_user
     logger.info(f'User {user.first_name} solicited the order list.')
@@ -81,13 +85,37 @@ def list_all(update, content):
 
     final = ''
     for order in order_list:
-        final += '%s (R$%s): \n\n' % (order['user'], order['price'])
+        final += '%s (R$%s): \n\n' % (order['user'], float(order['price']))
         for p in order['pedido']:
             final += '- %s\n' % (p)
         final += '\n' + '-' * 10 + '\n'
     
     update.message.reply_text(final)
 
+
+def get_all_prices(update, content):
+    user = update.message.from_user
+    logger.info(f'User {user.first_name} solicited all order prices.')
+
+    order_list = read_data()
+    final = ''
+    for order in order_list:
+        final += '*%s*\n- Total do pedido: *R$%s*\n\n' % (order['user'], float(order['price']))
+    
+    update.message.reply_text(final, parse_mode=ParseMode.MARKDOWN)
+
+def get_price(update, content):
+    user = update.message.from_user
+    logger.info(f'User {user.first_name} solicited your order prices.')
+
+    name = content.args[0]
+    order_list = read_data()
+    final = ''
+    for order in order_list:
+        if name.lower() in order['user'].lower():
+            final += '*%s*\n- Total do pedido: *R$%s*\n\n' % (order['user'], float(order['price']))
+    
+    update.message.reply_text(final, parse_mode=ParseMode.MARKDOWN)
 
 def main():
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
@@ -98,7 +126,9 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[
             CommandHandler('start', start),
-            CommandHandler('list', list_all)
+            CommandHandler('list', list_all),
+            CommandHandler('prices', get_all_prices),
+            CommandHandler('price', get_price)
         ],
 
         states={
