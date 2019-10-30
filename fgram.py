@@ -21,9 +21,16 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # Constants
+os.environ['TELEGRAM_TOKEN'] = '1062175860:AAGINb8kcYk-HcZ8mJ8Nz_J7nvcTkT4U_2Y'
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 LOCATION = 1
 
+# read the json file
+def read_data():
+    with open('list.json', 'r') as f:
+        data = json.load(f)
+
+    return data
 
 def start(update, context):
     user = update.message.from_user
@@ -69,15 +76,13 @@ def error(update, context):
 
 def list_all(update, content):
     user = update.message.from_user
-    logger.info('User %s solicited the order list.', user.first_name)
+    logger.info(f'User {user.first_name} solicited the order list.')
     update.message.reply_text('Lista de pedidos: ')
-
-    with open('list.json', 'r') as f:
-        order_list = json.load(f)
+    order_list = read_data()
 
     final = ''
     for order in order_list:
-        final += '%s (R$%s): \n\n' % (order['user'], order['preco'])
+        final += '%s (R$%s): \n\n' % (order['user'], order['price'])
         for p in order['pedido']:
             final += '- %s\n' % (p)
         final += '\n' + '-' * 10 + '\n'
