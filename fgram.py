@@ -85,7 +85,7 @@ def list_all(update, content):
 
     final = ''
     for order in order_list:
-        final += '%s (R$%s): \n\n' % (order['user'], float(rder['price']))
+        final += '%s (R$%s): \n\n' % (order['user'], float(order['price']))
         for p in order['pedido']:
             final += '- %s\n' % (p)
         final += '\n' + '-' * 10 + '\n'
