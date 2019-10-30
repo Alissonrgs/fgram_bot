@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import json
 
 from telegram import (ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
@@ -58,6 +59,23 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
+def list_all(update, content):
+    user = update.message.from_user
+    logger.info('User %s solicited the order list.', user.first_name)
+    update.message.reply_text('Lista de pedidos: ')
+
+    with open('list.json', 'r') as f:
+        order_list = json.load(f)
+
+    final = ''
+    for order in order_list:
+        final += '%s (R$%s): \n\n' % (order['user'], order['preco'])
+        for p in order['pedido']:
+            final += '- %s\n' % (p)
+        final += '\n' + '-' * 10 + '\n'
+    
+    update.message.reply_text(final)
+
 
 def main():
     telegram_token = ""
@@ -72,7 +90,10 @@ def main():
 
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[
+            CommandHandler('start', start),
+            CommandHandler('list', list_all)
+        ],
 
         states={
             LOCATION: [MessageHandler(Filters.location, location),
