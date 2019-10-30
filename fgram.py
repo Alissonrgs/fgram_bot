@@ -21,7 +21,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # Constants
-os.environ['TELEGRAM_TOKEN'] = '1062175860:AAGINb8kcYk-HcZ8mJ8Nz_J7nvcTkT4U_2Y'
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 LOCATION = 1
 
