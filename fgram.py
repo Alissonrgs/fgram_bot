@@ -3,6 +3,7 @@
 
 # Python Imports
 import logging
+import json
 import os
 
 # Thirt Party Imports
@@ -23,6 +24,12 @@ logger = logging.getLogger(__name__)
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 LOCATION = 1
 
+# read the json file
+def read_data():
+    with open('list.json', 'r') as f:
+        data = json.load(f)
+
+    return data
 
 def start(update, context):
     user = update.message.from_user
@@ -66,6 +73,21 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
+def list_all(update, content):
+    user = update.message.from_user
+    logger.info(f'User {user.first_name} solicited the order list.')
+    update.message.reply_text('Lista de pedidos: ')
+    order_list = read_data()
+
+    final = ''
+    for order in order_list:
+        final += '%s (R$%s): \n\n' % (order['user'], order['price'])
+        for p in order['pedido']:
+            final += '- %s\n' % (p)
+        final += '\n' + '-' * 10 + '\n'
+    
+    update.message.reply_text(final)
+
 
 def main():
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
@@ -74,7 +96,10 @@ def main():
     dp = updater.dispatcher
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[
+            CommandHandler('start', start),
+            CommandHandler('list', list_all)
+        ],
 
         states={
             LOCATION: [MessageHandler(Filters.location, location),
