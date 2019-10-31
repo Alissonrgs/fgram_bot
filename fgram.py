@@ -8,10 +8,8 @@ import os
 
 # Thirt Party Imports
 from dotenv import load_dotenv
-from telegram import (
-    ReplyKeyboardRemove,
-    ParseMode
-)
+from pymongo import MongoClient
+from telegram import (ReplyKeyboardRemove, ParseMode)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
@@ -24,8 +22,14 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # Constants
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 LOCATION = 1
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+MONGODB_URL = os.getenv("MONGODB_URL")
+
+# Database connection
+# mongoClient = MongoClient(MONGODB_URL)
+# db = mongoClient.test_database
+
 
 # read the json file
 def read_data():
@@ -33,6 +37,7 @@ def read_data():
         data = json.load(f)
 
     return data
+
 
 def start(update, context):
     user = update.message.from_user
@@ -89,7 +94,7 @@ def list_all(update, content):
         for p in order['pedido']:
             final += '- %s\n' % (p)
         final += '\n' + '-' * 10 + '\n'
-    
+
     update.message.reply_text(final)
 
 
@@ -101,8 +106,9 @@ def get_all_prices(update, content):
     final = ''
     for order in order_list:
         final += '*%s*\n- Total do pedido: *R$%s*\n\n' % (order['user'], float(order['price']))
-    
+
     update.message.reply_text(final, parse_mode=ParseMode.MARKDOWN)
+
 
 def get_price(update, content):
     user = update.message.from_user
@@ -114,8 +120,9 @@ def get_price(update, content):
     for order in order_list:
         if name.lower() in order['user'].lower():
             final += '*%s*\n- Total do pedido: *R$%s*\n\n' % (order['user'], float(order['price']))
-    
+
     update.message.reply_text(final, parse_mode=ParseMode.MARKDOWN)
+
 
 def main():
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
@@ -130,7 +137,6 @@ def main():
             CommandHandler('prices', get_all_prices),
             CommandHandler('price', get_price)
         ],
-
         states={
             LOCATION: [MessageHandler(Filters.location, location),
                        CommandHandler('skip', skip_location)],

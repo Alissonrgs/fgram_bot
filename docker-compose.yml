@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: fgram
+      MONGO_INITDB_ROOT_PASSWORD: fgram
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - fgram
+
+volumes:
+  mongodb-data:
+    driver: local
+
+networks:
+  fgram:
+    driver: bridge
