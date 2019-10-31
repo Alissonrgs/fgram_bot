@@ -7,6 +7,7 @@ import os
 
 # Thirt Party Imports
 from dotenv import load_dotenv
+from pymongo import MongoClient
 from telegram import (ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
@@ -20,8 +21,13 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # Constants
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 LOCATION = 1
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+MONGODB_URL = os.getenv("MONGODB_URL")
+
+# Database connection
+# mongoClient = MongoClient(MONGODB_URL)
+# db = mongoClient.test_database
 
 
 def start(update, context):
