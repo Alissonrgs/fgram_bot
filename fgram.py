@@ -3,12 +3,13 @@
 
 # Python Imports
 import logging
+import json
 import os
 
 # Thirt Party Imports
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from telegram import (ReplyKeyboardRemove)
+from telegram import (ReplyKeyboardRemove, ParseMode)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
@@ -28,6 +29,14 @@ MONGODB_URL = os.getenv("MONGODB_URL")
 # Database connection
 # mongoClient = MongoClient(MONGODB_URL)
 # db = mongoClient.test_database
+
+
+# read the json file
+def read_data():
+    with open('list.json', 'r') as f:
+        data = json.load(f)
+
+    return data
 
 
 def start(update, context):
@@ -73,6 +82,48 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
+def list_all(update, content):
+    user = update.message.from_user
+    logger.info(f'User {user.first_name} solicited the order list.')
+    update.message.reply_text('Lista de pedidos: ')
+    order_list = read_data()
+
+    final = ''
+    for order in order_list:
+        final += '%s (R$%s): \n\n' % (order['user'], float(order['price']))
+        for p in order['pedido']:
+            final += '- %s\n' % (p)
+        final += '\n' + '-' * 10 + '\n'
+
+    update.message.reply_text(final)
+
+
+def get_all_prices(update, content):
+    user = update.message.from_user
+    logger.info(f'User {user.first_name} solicited all order prices.')
+
+    order_list = read_data()
+    final = ''
+    for order in order_list:
+        final += '*%s*\n- Total do pedido: *R$%s*\n\n' % (order['user'], float(order['price']))
+
+    update.message.reply_text(final, parse_mode=ParseMode.MARKDOWN)
+
+
+def get_price(update, content):
+    user = update.message.from_user
+    logger.info(f'User {user.first_name} solicited your order prices.')
+
+    name = content.args[0]
+    order_list = read_data()
+    final = ''
+    for order in order_list:
+        if name.lower() in order['user'].lower():
+            final += '*%s*\n- Total do pedido: *R$%s*\n\n' % (order['user'], float(order['price']))
+
+    update.message.reply_text(final, parse_mode=ParseMode.MARKDOWN)
+
+
 def main():
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
 
@@ -80,8 +131,12 @@ def main():
     dp = updater.dispatcher
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
-
+        entry_points=[
+            CommandHandler('start', start),
+            CommandHandler('list', list_all),
+            CommandHandler('prices', get_all_prices),
+            CommandHandler('price', get_price)
+        ],
         states={
             LOCATION: [MessageHandler(Filters.location, location),
                        CommandHandler('skip', skip_location)],

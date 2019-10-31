@@ -1,0 +1,38 @@
+[
+    {
+        "user": "Gabriel Victor",
+        "pedido": [
+            "Filé de frango grelhado",
+            "Baião",
+            "Spagueth alho e óleo",
+            "Farofa",
+            "Tomate",
+            "Mamão"
+        ],
+        "price": 20
+    },
+    {
+        "user": "Alisson Soares",
+        "pedido": [
+            "Filé de frango grelhado",
+            "Baião",
+            "Spagueth alho e óleo",
+            "Farofa",
+            "Tomate",
+            "Mamão"
+        ],
+        "price": 20
+    },
+    {
+        "user": "Rodrigo Parente",
+        "pedido": [
+            "Filé de frango grelhado",
+            "Baião",
+            "Spagueth alho e óleo",
+            "Farofa",
+            "Tomate",
+            "Mamão"
+        ],
+        "price": 20
+    }
+]
